@@ -17,8 +17,7 @@ import type {
   RecentFile,
   SlideBundle,
   SlideMeta,
-  SlideTransitionType,
-  SolidOutputMode
+  SlideTransitionType
 } from '@shared/types'
 import {
   IconArrowLeft,
@@ -309,8 +308,8 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
         const cfg = config ?? (await window.api.getConfig())
         const result = await window.api.exportAllSlides(path, {
           transparent,
-          width: cfg.exportWidth || undefined,
-          height: cfg.exportHeight || undefined
+          width: cfg.exportWidth || 1920,
+          height: cfg.exportHeight || 1080
         })
         setBundle(result)
         setOutputMode('live')
@@ -455,7 +454,7 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
   )
 
   const applySolidMode = useCallback(
-    async (mode: SolidOutputMode) => {
+    async (mode: 'black' | 'white') => {
       if (busy) return
       if (outputMode === mode) {
         if (hasSelection) {
@@ -471,11 +470,7 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
       }
       setFrozen(false)
       setOutputMode(mode)
-      const labels = {
-        black: 'Noir',
-        white: 'Blanc',
-        transparent: 'Transparent'
-      } as const
+      const labels = { black: 'Noir', white: 'Blanc' } as const
       const sent = await window.api.ndiSendSolid(mode)
       setNdi(sent)
       setFrozen(Boolean(sent.frozen))
@@ -540,19 +535,6 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
     void selectSlide(currentIndex + 1)
   }, [currentIndex, hasSelection, selectSlide, slides.length])
 
-  useEffect(() => {
-    return window.api.onHotkey((action: HotkeyAction) => {
-      if (busy || settingsOpen) return
-      if (action === 'prev') goPrev()
-      else if (action === 'next') goNext()
-      else if (action === 'black' || action === 'white' || action === 'transparent') {
-        void applySolidMode(action)
-      } else if (action === 'freeze') {
-        void toggleFreeze()
-      }
-    })
-  }, [applySolidMode, busy, goNext, goPrev, settingsOpen, toggleFreeze])
-
   const toggleTransparent = useCallback(async () => {
     const next = !transparent
     setTransparent(next)
@@ -564,13 +546,38 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
     setStatus(next ? 'Ré-export sans fond…' : 'Ré-export avec fond…')
     try {
       const cfg = config ?? (await window.api.getConfig())
+      let width = cfg.exportWidth || 0
+      let height = cfg.exportHeight || 0
+      // Conserver la résolution du PNG déjà chargé (évite le redimensionnement Shape.Export)
+      if (!width || !height) {
+        const sample = bundle.slides[currentIndex] ?? bundle.slides[0]
+        if (sample) {
+          const size = await new Promise<{ width: number; height: number } | null>((resolve) => {
+            const img = new Image()
+            img.onload = () =>
+              resolve({ width: img.naturalWidth, height: img.naturalHeight })
+            img.onerror = () => resolve(null)
+            img.src = sample.url
+          })
+          if (size && size.width > 0 && size.height > 0) {
+            width = size.width
+            height = size.height
+          }
+        }
+      }
+      if (!width || !height) {
+        width = 1920
+        height = 1080
+      }
       const result = await window.api.exportAllSlides(bundle.filePath, {
         transparent: next,
-        width: cfg.exportWidth || undefined,
-        height: cfg.exportHeight || undefined
+        width,
+        height
       })
       setBundle(result)
       setOutputMode('live')
+      setFrozen(false)
+      await window.api.ndiSetFrozen(false)
       const idx = Math.min(Math.max(currentIndex, 0), result.slides.length - 1)
       setCurrentIndex(idx)
       setPreviewIndex(idx)
@@ -579,7 +586,7 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
         setNdi(sent)
         if (sent.lastError) setError(sent.lastError)
       }
-      setStatus(next ? 'Transparence activée.' : 'Fond inclus.')
+      setStatus(next ? 'Sans fond activé — texte et formes seuls.' : 'Fond PowerPoint inclus.')
       await window.api.watchPresentation(result.filePath)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Échec du ré-export.')
@@ -589,6 +596,45 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
       setProgress(null)
     }
   }, [bundle, config, currentIndex, transparent])
+
+  /** T / raccourci : diapo sans fond (pas un écran vide). */
+  const onTransparentPress = useCallback(async () => {
+    if (busy) return
+    if (outputMode !== 'live') {
+      setFrozen(false)
+      await window.api.ndiSetFrozen(false)
+      setOutputMode('live')
+      if (transparent) {
+        if (hasSelection) await selectSlide(currentIndex)
+        setStatus('Diapo sans fond diffusée.')
+        return
+      }
+    }
+    await toggleTransparent()
+  }, [
+    busy,
+    currentIndex,
+    hasSelection,
+    outputMode,
+    selectSlide,
+    toggleTransparent,
+    transparent
+  ])
+
+  useEffect(() => {
+    return window.api.onHotkey((action: HotkeyAction) => {
+      if (busy || settingsOpen) return
+      if (action === 'prev') goPrev()
+      else if (action === 'next') goNext()
+      else if (action === 'black' || action === 'white') {
+        void applySolidMode(action)
+      } else if (action === 'transparent') {
+        void onTransparentPress()
+      } else if (action === 'freeze') {
+        void toggleFreeze()
+      }
+    })
+  }, [applySolidMode, busy, goNext, goPrev, onTransparentPress, settingsOpen, toggleFreeze])
 
   const togglePin = useCallback(async () => {
     const applied = await window.api.setAlwaysOnTop(!alwaysOnTop)
@@ -974,10 +1020,10 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
                   className={`classic__btn ${transparent ? 'is-active' : ''}`}
                   onClick={() => void toggleTransparent()}
                   disabled={busy}
-                  data-tip="Transparence (sans fond)"
+                  data-tip="Texte et formes sans fond PowerPoint (PNG alpha)"
                 >
                   <IconTransparency />
-                  <span>Alpha</span>
+                  <span>Sans fond</span>
                 </button>
 
                 <button
@@ -1111,7 +1157,7 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
           <div className="classic__screen">
             <div
               ref={previewRef}
-              className={`classic__preview ${transparent || outputMode === 'transparent' ? 'classic__preview--checker' : ''} ${outputMode !== 'live' ? `classic__preview--${outputMode}` : ''}`}
+              className={`classic__preview ${transparent ? 'classic__preview--checker' : ''} ${outputMode !== 'live' ? `classic__preview--${outputMode}` : ''}`}
             >
               {outputMode === 'black' && (
                 <p className="classic__screen-label">Sortie noire</p>
@@ -1120,9 +1166,6 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
                 <p className="classic__screen-label classic__screen-label--dark">
                   Sortie blanche
                 </p>
-              )}
-              {outputMode === 'transparent' && (
-                <p className="classic__screen-label">Sortie transparente</p>
               )}
               {outputMode === 'live' && displaySlide ? (
                 <>
@@ -1245,10 +1288,10 @@ function ClassicMode({ onBack }: ClassicModeProps): JSX.Element {
                   </button>
                   <button
                     type="button"
-                    className={`classic__bwt-btn ${outputMode === 'transparent' ? 'is-active' : ''}`}
-                    onClick={() => void applySolidMode('transparent')}
+                    className={`classic__bwt-btn ${transparent && outputMode === 'live' ? 'is-active' : ''}`}
+                    onClick={() => void onTransparentPress()}
                     disabled={busy}
-                    data-tip="Sortie transparente (NDI)"
+                    data-tip="Diapo sans fond PowerPoint (texte / formes)"
                   >
                     T
                   </button>

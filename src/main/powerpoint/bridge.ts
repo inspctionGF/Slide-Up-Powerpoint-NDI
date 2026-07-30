@@ -1,7 +1,7 @@
 import { spawn } from 'child_process'
 import { existsSync, mkdirSync, openSync, closeSync, readFileSync, rmSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { app } from 'electron'
+import { app, nativeImage } from 'electron'
 import { EXPORT_ALL_BG, EXPORT_ALL_NOBG } from './scripts'
 import { toSlideupUrl } from '../protocol'
 import type { ExportOptions, ExportProgress, SlideBundle, SlideMeta } from './types'
@@ -10,6 +10,24 @@ let activeTempDir: string | null = null
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ * Ne fait que réduire un PNG trop grand (jamais d’agrandissement).
+ * Upscaler une image sous-résolue pixellise — on garde la résolution native.
+ */
+function downscalePngIfLarger(path: string, width: number, height: number): void {
+  if (width <= 0 || height <= 0) return
+  try {
+    const img = nativeImage.createFromPath(path)
+    if (img.isEmpty()) return
+    const size = img.getSize()
+    if (size.width <= width && size.height <= height) return
+    const resized = img.resize({ width, height, quality: 'best' })
+    writeFileSync(path, resized.toPNG())
+  } catch {
+    // ignore resize errors — garder le PNG brut
+  }
 }
 
 /** Attend qu’un PNG soit lisible (évite EBUSY juste après l’export COM). */
@@ -158,8 +176,10 @@ export async function exportAllSlides(
 
   const script = options.transparent ? EXPORT_ALL_NOBG : EXPORT_ALL_BG
   const scriptPath = writeScript(script, options.transparent ? 'export-nobg.js' : 'export-bg.js')
-  const width = String(options.width ?? 0)
-  const height = String(options.height ?? 0)
+  const targetW = options.width ?? 0
+  const targetH = options.height ?? 0
+  const width = String(targetW)
+  const height = String(targetH)
 
   onProgress?.({ current: 0, total: 0, message: 'Ouverture de PowerPoint…' })
 
@@ -173,6 +193,9 @@ export async function exportAllSlides(
     const png = join(tempDir, `Slide${i}.png`)
     const ready = await waitForReadablePng(png, i === 1 ? 10 : 4)
     if (!ready) break
+    if (options.transparent && targetW > 0 && targetH > 0) {
+      downscalePngIfLarger(png, targetW, targetH)
+    }
     const fx = effects.get(i)
     slides.push({
       index: i,

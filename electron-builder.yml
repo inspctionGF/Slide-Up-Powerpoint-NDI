@@ -12,7 +12,12 @@ extraResources:
     to: ndi/slideup-ndi.exe
   - from: resources/ndi/Processing.NDI.Lib.x64.dll
     to: ndi/Processing.NDI.Lib.x64.dll
+  - from: resources/icon.png
+    to: icon.png
+  - from: resources/icon-16.png
+    to: icon-16.png
 win:
+  icon: icon.ico
   target:
     - target: nsis
       arch:
@@ -21,3 +26,6 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   shortcutName: Slide-up
+  installerIcon: icon.ico
+  uninstallerIcon: icon.ico
+  installerHeaderIcon: icon.ico

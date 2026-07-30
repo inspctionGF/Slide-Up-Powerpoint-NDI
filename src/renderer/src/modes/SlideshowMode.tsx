@@ -5,8 +5,7 @@ import type {
   NdiStatus,
   OutputMode,
   SlideshowStatusEvent,
-  SlideTransitionType,
-  SolidOutputMode
+  SlideTransitionType
 } from '@shared/types'
 import {
   IconArrowLeft,
@@ -164,6 +163,10 @@ function SlideshowMode({ onBack }: SlideshowModeProps): JSX.Element {
     setTransparent(next)
     if (running) {
       await window.api.slideshowSetTransparent(next)
+      setOutputMode('live')
+      setFrozen(false)
+      await window.api.ndiSetFrozen(false)
+      setStatusText(next ? 'Sans fond activé — texte et formes seuls.' : 'Fond PowerPoint inclus.')
     }
   }, [running, transparent])
 
@@ -173,7 +176,7 @@ function SlideshowMode({ onBack }: SlideshowModeProps): JSX.Element {
   }, [onBack])
 
   const applySolidMode = useCallback(
-    async (mode: SolidOutputMode) => {
+    async (mode: 'black' | 'white') => {
       if (outputMode === mode) {
         setOutputMode('live')
         setFrozen(false)
@@ -183,14 +186,8 @@ function SlideshowMode({ onBack }: SlideshowModeProps): JSX.Element {
       }
       setFrozen(false)
       setOutputMode(mode)
-      const labels = {
-        black: 'Noir',
-        white: 'Blanc',
-        transparent: 'Transparent'
-      } as const
-      if (mode === 'black' || mode === 'white') {
-        void window.api.slideshowCommand(mode)
-      }
+      const labels = { black: 'Noir', white: 'Blanc' } as const
+      void window.api.slideshowCommand(mode)
       const sent = await window.api.ndiSendSolid(mode)
       setNdi(sent)
       setFrozen(Boolean(sent.frozen))
@@ -204,6 +201,20 @@ function SlideshowMode({ onBack }: SlideshowModeProps): JSX.Element {
     },
     [outputMode]
   )
+
+  /** T / raccourci : diapo sans fond (pas un écran vide). */
+  const onTransparentPress = useCallback(async () => {
+    if (outputMode !== 'live') {
+      setFrozen(false)
+      await window.api.ndiSetFrozen(false)
+      setOutputMode('live')
+      if (transparent) {
+        setStatusText('Diapo sans fond diffusée.')
+        return
+      }
+    }
+    await toggleTransparent()
+  }, [outputMode, toggleTransparent, transparent])
 
   const toggleFreeze = useCallback(async () => {
     const next = !frozen
@@ -230,17 +241,19 @@ function SlideshowMode({ onBack }: SlideshowModeProps): JSX.Element {
       if (settingsOpen) return
       if (action === 'prev') void window.api.slideshowCommand('prev')
       else if (action === 'next') void window.api.slideshowCommand('next')
-      else if (action === 'black' || action === 'white' || action === 'transparent') {
+      else if (action === 'black' || action === 'white') {
         void applySolidMode(action)
+      } else if (action === 'transparent') {
+        void onTransparentPress()
       } else if (action === 'freeze') {
         void toggleFreeze()
       }
     })
-  }, [applySolidMode, settingsOpen, toggleFreeze])
+  }, [applySolidMode, onTransparentPress, settingsOpen, toggleFreeze])
 
   const previewClass = [
     'show__preview',
-    transparent || outputMode === 'transparent' ? 'show__preview--checker' : '',
+    transparent ? 'show__preview--checker' : '',
     outputMode !== 'live' ? `show__preview--${outputMode}` : `show__preview--${screenMode}`
   ]
     .filter(Boolean)
@@ -263,10 +276,10 @@ function SlideshowMode({ onBack }: SlideshowModeProps): JSX.Element {
               type="button"
               className={`show__btn ${transparent ? 'is-active' : ''}`}
               onClick={() => void toggleTransparent()}
-              data-tip="Transparence (sans fond)"
+              data-tip="Texte et formes sans fond PowerPoint (PNG alpha)"
             >
               <IconTransparency />
-              <span>Alpha</span>
+              <span>Sans fond</span>
             </button>
             <button
               type="button"
@@ -301,9 +314,6 @@ function SlideshowMode({ onBack }: SlideshowModeProps): JSX.Element {
               {outputMode === 'black' && <p className="show__screen-label">Sortie noire</p>}
               {outputMode === 'white' && (
                 <p className="show__screen-label is-dark">Sortie blanche</p>
-              )}
-              {outputMode === 'transparent' && (
-                <p className="show__screen-label">Sortie transparente</p>
               )}
               {outputMode === 'live' && screenMode === 'black' && (
                 <p className="show__screen-label">Écran noir</p>
@@ -365,9 +375,9 @@ function SlideshowMode({ onBack }: SlideshowModeProps): JSX.Element {
                   </button>
                   <button
                     type="button"
-                    className={`show__bwt-btn ${outputMode === 'transparent' ? 'is-active' : ''}`}
-                    onClick={() => void applySolidMode('transparent')}
-                    data-tip="Sortie transparente (NDI)"
+                    className={`show__bwt-btn ${transparent && outputMode === 'live' ? 'is-active' : ''}`}
+                    onClick={() => void onTransparentPress()}
+                    data-tip="Diapo sans fond PowerPoint (texte / formes)"
                   >
                     T
                   </button>

@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "description": "Diffusion de diapositives PowerPoint via NDI",
   "author": "Slide-up",
+  "license": "MIT",
   "main": "./out/main/index.js",
   "type": "module",
   "engines": {
@@ -13,9 +14,10 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "build:ndi": "node scripts/build-ndi.mjs",
+    "prepare:icons": "node scripts/prepare-icons.mjs",
     "ensure:ndi": "node scripts/ensure-ndi-bundle.mjs",
     "preview": "electron-vite preview",
-    "dist": "npm run build:ndi && npm run ensure:ndi && npm run build && electron-builder --win",
+    "dist": "npm run prepare:icons && npm run build:ndi && npm run ensure:ndi && npm run build && electron-builder --win",
     "postinstall": "electron-builder install-app-deps",
     "lint": "eslint ."
   },
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^22.15.30",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
@@ -39,6 +42,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "png-to-ico": "^3.0.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.0",
     "vite": "^7.0.0"

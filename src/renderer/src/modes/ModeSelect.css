@@ -17,7 +17,7 @@
   background:
     radial-gradient(90% 70% at 8% -10%, rgba(232, 153, 58, 0.18), transparent 55%),
     radial-gradient(70% 60% at 100% 20%, rgba(47, 198, 184, 0.12), transparent 50%),
-    linear-gradient(160deg, #12171c 0%, #0a0d10 55%, #0e1318 100%);
+    linear-gradient(160deg, var(--mode-bg-0) 0%, var(--mode-bg-1) 55%, var(--mode-bg-2) 100%);
 }
 
 .mode__grain {
@@ -71,12 +71,12 @@
   grid-template-rows: auto auto;
   gap: 0.35rem 1rem;
   padding: 1.3rem 1.4rem 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--panel-edge);
   border-radius: 1.25rem;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
-    rgba(18, 22, 28, 0.72);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+    linear-gradient(180deg, var(--fill-03), var(--fill-01)),
+    var(--mode-card);
+  box-shadow: var(--shadow-lift);
   backdrop-filter: blur(10px);
   color: inherit;
   text-align: left;
@@ -92,10 +92,10 @@
 .mode__choice:focus-visible {
   border-color: rgba(232, 153, 58, 0.55);
   background:
-    linear-gradient(180deg, rgba(232, 153, 58, 0.1), rgba(255, 255, 255, 0.02)),
-    rgba(18, 22, 28, 0.85);
+    linear-gradient(180deg, rgba(232, 153, 58, 0.1), var(--fill-01)),
+    var(--mode-card-hover);
   transform: translateY(-3px);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-menu);
   outline: none;
 }
 
@@ -107,8 +107,8 @@
 .mode__choice--live:focus-visible {
   border-color: rgba(47, 198, 184, 0.55);
   background:
-    linear-gradient(180deg, rgba(47, 198, 184, 0.1), rgba(255, 255, 255, 0.02)),
-    rgba(18, 22, 28, 0.85);
+    linear-gradient(180deg, rgba(47, 198, 184, 0.1), var(--fill-01)),
+    var(--mode-card-hover);
 }
 
 .mode__choice-icon {
@@ -119,9 +119,9 @@
   width: 2.65rem;
   height: 2.65rem;
   color: var(--amber);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--line);
   border-radius: 0.9rem;
-  background: rgba(0, 0, 0, 0.28);
+  background: var(--glass);
 }
 
 .mode__choice--live .mode__choice-icon {
@@ -186,9 +186,9 @@
   gap: 0.75rem;
   width: fit-content;
   padding: 0.45rem 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--panel-edge);
   border-radius: 999px;
-  background: rgba(18, 22, 28, 0.65);
+  background: var(--mode-foot);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.06em;
@@ -200,7 +200,7 @@
 .mode__foot-sep {
   width: 1px;
   height: 0.85rem;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--fill-07);
 }
 
 @keyframes mode-rise {

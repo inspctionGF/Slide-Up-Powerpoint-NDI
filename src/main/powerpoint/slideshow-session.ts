@@ -1,7 +1,7 @@
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import { existsSync, mkdirSync, writeFileSync, rmSync } from 'fs'
 import { join } from 'path'
-import { app } from 'electron'
+import { app, nativeImage } from 'electron'
 import {
   SLIDESHOW_CHECK,
   SLIDESHOW_DIRECT_CMD,
@@ -50,6 +50,8 @@ export class SlideshowSession {
   private cmdProc: ChildProcessWithoutNullStreams | null = null
   private tempDir: string | null = null
   private transparent = true
+  private exportWidth = 0
+  private exportHeight = 0
   private lastIndex = -1
   private exporting = false
   private listeners = new Set<Listener>()
@@ -80,13 +82,15 @@ export class SlideshowSession {
     await this.teardownProcesses()
 
     this.transparent = options.transparent
+    this.exportWidth = options.width ?? 0
+    this.exportHeight = options.height ?? 0
     this.running = true
     this.lastIndex = -1
     this.tempDir = join(app.getPath('temp'), 'slide-up', `show-${Date.now()}`)
     mkdirSync(this.tempDir, { recursive: true })
 
-    const width = String(options.width ?? 0)
-    const height = String(options.height ?? 0)
+    const width = String(this.exportWidth)
+    const height = String(this.exportHeight)
     const exportScript = writeScript(
       this.transparent ? 'show-export-nobg.vbs' : 'show-export-bg.vbs',
       this.transparent ? SLIDESHOW_EXPORT_NOBG : SLIDESHOW_EXPORT_BG
@@ -191,6 +195,29 @@ export class SlideshowSession {
       const index = parseInt(sent[1], 10)
       const path = join(this.tempDir, 'Slide.png')
       if (existsSync(path)) {
+        if (this.transparent && this.exportWidth > 0 && this.exportHeight > 0) {
+          try {
+            const img = nativeImage.createFromPath(path)
+            if (!img.isEmpty()) {
+              const size = img.getSize()
+              // Jamais d’upscale (pixellisation) — réduire seulement si trop grand
+              if (size.width > this.exportWidth || size.height > this.exportHeight) {
+                writeFileSync(
+                  path,
+                  img
+                    .resize({
+                      width: this.exportWidth,
+                      height: this.exportHeight,
+                      quality: 'best'
+                    })
+                    .toPNG()
+                )
+              }
+            }
+          } catch {
+            // garder le PNG brut
+          }
+        }
         this.emit({
           type: 'exported',
           index,
@@ -223,6 +250,8 @@ export class SlideshowSession {
   async setTransparent(transparent: boolean, width = 0, height = 0): Promise<void> {
     if (!this.running || !this.tempDir) return
     this.transparent = transparent
+    this.exportWidth = width
+    this.exportHeight = height
     if (this.exportProc) {
       try {
         this.exportProc.kill()

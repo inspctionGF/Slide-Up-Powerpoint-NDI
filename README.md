@@ -38,9 +38,10 @@ npm run dist
 |----------|------|
 | `npm run dev` | App Electron en développement |
 | `npm run build` | Compile main / preload / renderer |
+| `npm run prepare:icons` | Génère `build/icon.ico` + PNG depuis `public/logo.svg` |
 | `npm run build:ndi` | Compile helper + bundle la DLL NDI dans `resources/ndi/` |
 | `npm run ensure:ndi` | Échoue si le bundle NDI est incomplet |
-| `npm run dist` | Installateur NSIS avec NDI inclus |
+| `npm run dist` | Icônes + installateur NSIS avec NDI inclus |
 
 ## Modes
 
@@ -68,4 +69,12 @@ PowerPoint (COM/cscript) → PNG → slideup-ndi.exe (+ DLL bundlée) → NDI
 
 Docs techniques : [`docs/`](docs/).
 
+## Licence
+
+Le **code source** de Slide-up est sous licence [MIT](LICENSE).
+
+Les composants tiers (notamment la runtime **NDI®** de Vizrt) restent sous
+leurs licences respectives — voir [NOTICE](NOTICE).
+
 > Redistribution de `Processing.NDI.Lib.x64.dll` : respecter la licence NDI / Vizrt en vigueur.
+> NDI® est une marque déposée de Vizrt NDI AB.

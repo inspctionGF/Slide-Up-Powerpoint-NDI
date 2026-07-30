@@ -1,6 +1,5 @@
 .settings {
   --settings-width: min(22.5rem, 42vw);
-  --panel-edge: rgba(255, 255, 255, 0.08);
   flex: 0 0 0;
   width: 0;
   min-width: 0;
@@ -45,7 +44,7 @@
   min-height: var(--app-chrome-height);
   height: auto;
   padding: 0.35rem 1rem;
-  border-bottom: 1px solid var(--panel-edge, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--panel-edge);
   box-sizing: border-box;
   background: var(--surface);
 }
@@ -111,9 +110,9 @@
   flex-direction: column;
   gap: 0.45rem;
   padding: 0.65rem 0.7rem 0.7rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--panel-edge);
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--fill-01);
 }
 
 .settings__hotkeys {
@@ -134,7 +133,7 @@
 .settings__hotkey-label {
   font-size: 0.82rem;
   line-height: 1.3;
-  color: rgba(140, 180, 220, 0.92);
+  color: var(--label-accent);
   text-align: left;
   text-justify: inter-word;
 }
@@ -149,7 +148,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.42rem 1.85rem 0.42rem 0.65rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--line);
   border-radius: 0.65rem;
   background: var(--surface-sunken);
   color: var(--ink);
@@ -182,14 +181,14 @@
 }
 
 .settings__msg--warn {
-  color: #f0a0a0;
+  color: var(--warn);
 }
 
 .settings__close,
 .settings__btn {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--fill-02);
   color: var(--text);
   font-size: 0.8rem;
   padding: 0.35rem 0.75rem;
@@ -202,7 +201,7 @@
 
 .settings__close:hover,
 .settings__btn:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--fill-05);
   color: var(--ink);
 }
 
@@ -233,7 +232,7 @@
 
 .settings__field input {
   padding: 0.55rem 0.7rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--line);
   border-radius: 0.75rem;
   background: var(--surface-sunken);
   color: var(--ink);
@@ -242,10 +241,10 @@
 .settings__fieldset {
   margin: 0;
   padding: 1.05rem 1rem 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--panel-edge);
   border-radius: 1rem;
   text-align: left;
-  background: rgba(0, 0, 0, 0.18);
+  background: var(--glass-soft);
 }
 
 .settings__fieldset legend {
@@ -270,9 +269,9 @@
   flex-direction: column;
   gap: 0.55rem;
   padding: 0.7rem 0.75rem 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--panel-edge);
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--fill-01);
 }
 
 .settings__gallery-caption {
@@ -320,8 +319,8 @@
   gap: 0.5rem;
   flex-shrink: 0;
   padding: 0.75rem 1rem 0.9rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.18);
+  border-top: 1px solid var(--panel-edge);
+  background: var(--glass-soft);
 }
 
 .settings__ndi {
@@ -331,7 +330,7 @@
   border-radius: 0.35rem;
   background:
     linear-gradient(180deg, rgba(47, 198, 184, 0.05), transparent 55%),
-    rgba(0, 0, 0, 0.28);
+    var(--glass);
 }
 
 .settings__ndi-title {
@@ -372,9 +371,9 @@
 .settings__fieldset--gallery .settings__toggle-row {
   margin: 0;
   padding: 0.7rem 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--panel-edge);
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--fill-01);
 }
 
 .settings__toggle-row--rich {
@@ -393,7 +392,7 @@
 .settings__toggle-label {
   font-size: 0.88rem;
   line-height: 1.35;
-  color: rgba(140, 180, 220, 0.92);
+  color: var(--label-accent);
   text-align: left;
   text-justify: inter-word;
 }

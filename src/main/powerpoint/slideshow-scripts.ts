@@ -107,10 +107,11 @@ Do While True
         Else
           Dim isSaved
           isSaved = ap.Saved
-          If newWidth = 0 Then
-            ap.Slides(pos).Export Wscript.Arguments.Item(0) & "\\Slide.png", "PNG"
-          Else
+          If newWidth > 0 And newHeight > 0 Then
             ap.Slides(pos).Export Wscript.Arguments.Item(0) & "\\Slide.png", "PNG", newWidth, newHeight
+          Else
+            ' Résolution native PPT — meilleure qualité
+            ap.Slides(pos).Export Wscript.Arguments.Item(0) & "\\Slide.png", "PNG"
           End If
           If isSaved Then ap.Saved = True
           Wscript.Echo "PPTNDI: Sent 0 0 " & pos
@@ -122,7 +123,9 @@ Loop
 `.trim()
 
 /**
- * Args: tmpDir, width, height — export transparent
+ * Args: tmpDir, width, height — export transparent (formes seules, sans fond).
+ * Comme ppt-ndi : Shapes.Range.Export Format:=2, ExportMode:=1.
+ * Dimensions : toujours explicites (0,0 réduit la résolution).
  */
 export const SLIDESHOW_EXPORT_NOBG = `
 Dim objPPT, ap, newWidth, newHeight
@@ -157,22 +160,41 @@ Do While True
         ElseIf st = 5 Then
           Wscript.Echo "PPTNDI: Done"
         Else
-          Dim isSaved, slideW, slideH, tb, shpGroup
+          Dim isSaved, slideW, slideH, tb, shpGroup, origCnt, expW, expH, reqW, reqH, scaleW, scaleH
           isSaved = ap.Saved
           slideW = ap.PageSetup.SlideWidth
           slideH = ap.PageSetup.SlideHeight
+          If newWidth > 0 And newHeight > 0 Then
+            expW = newWidth
+            expH = newHeight
+          Else
+            expW = Round(slideW * 96 / 72, 0)
+            expH = Round(slideH * 96 / 72, 0)
+          End If
+          ' Suréchantillonnage ×2 (Shape.Export sort souvent trop petit)
+          reqW = expW * 2
+          reqH = expH * 2
+          origCnt = ap.Slides(pos).Shapes.Range().Count
           Set tb = ap.Slides(pos).Shapes.AddTextbox(1, 0, 0, slideW, slideH)
+          On Error Resume Next
           tb.Fill.Visible = 0
           tb.Line.Visible = 0
+          On Error Resume Next
           Set shpGroup = ap.Slides(pos).Shapes.Range()
-          If newWidth = 0 Then
-            shpGroup.Export Wscript.Arguments.Item(0) & "\\Slide.png", 2, slideW, slideH, 1
+          If shpGroup.Count = origCnt Then
+            tb.Delete
+            If isSaved Then ap.Saved = True
           Else
-            shpGroup.Export Wscript.Arguments.Item(0) & "\\Slide.png", 2, newWidth, newHeight, 1
+            ' Shape.Export : scale = SlideSize / ShapeSize * pixels cibles
+            scaleW = Round(slideW / shpGroup.Width * reqW, 0)
+            scaleH = Round(slideH / shpGroup.Height * reqH, 0)
+            If scaleW < 1 Then scaleW = reqW
+            If scaleH < 1 Then scaleH = reqH
+            shpGroup.Export Wscript.Arguments.Item(0) & "\\Slide.png", 2, scaleW, scaleH, 1
+            tb.Delete
+            If isSaved Then ap.Saved = True
+            Wscript.Echo "PPTNDI: Sent 0 0 " & pos
           End If
-          tb.Delete
-          If isSaved Then ap.Saved = True
-          Wscript.Echo "PPTNDI: Sent 0 0 " & pos
         End If
       End If
     End If

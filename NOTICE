@@ -1,0 +1,37 @@
+Slide-up
+Copyright (c) 2026 inspctionGF
+
+This product’s own source code is licensed under the MIT License (see LICENSE).
+
+===============================================================================
+Third-party components (not covered by the MIT License above)
+===============================================================================
+
+NDI® (Network Device Interface)
+-------------------------------------------------------------------------------
+This application may redistribute Processing.NDI.Lib (and related runtime
+files) from the NDI SDK / NDI Runtime, which are proprietary software of
+Vizrt NDI AB.
+
+NDI® is a registered trademark of Vizrt NDI AB.
+
+- NDI SDK / redistribution terms: https://docs.ndi.video/all/developing-with-ndi/sdk/licensing
+- NDI website: https://ndi.video
+
+Use and redistribution of NDI libraries are subject solely to the Vizrt NDI
+SDK / Runtime license agreement in force. Nothing in the MIT License of
+Slide-up grants rights to the NDI SDK, DLLs, or trademarks beyond what Vizrt
+allows.
+
+Microsoft PowerPoint / Office
+-------------------------------------------------------------------------------
+Slide-up automates Microsoft PowerPoint via COM on Windows. PowerPoint /
+Microsoft Office are proprietary products of Microsoft Corporation and are
+not redistributed with this application. Users must have a valid license to
+use PowerPoint.
+
+Electron, Node.js modules, and other open-source dependencies
+-------------------------------------------------------------------------------
+This application depends on Electron and numerous npm packages, each under
+their own licenses (typically MIT, Apache-2.0, BSD, or ISC). See package.json
+/ package-lock.json and each package’s LICENSE file for details.

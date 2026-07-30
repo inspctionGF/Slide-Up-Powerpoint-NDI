@@ -39,7 +39,7 @@ const HOTKEY_GROUPS: {
     fields: [
       { action: 'black', label: 'Noir' },
       { action: 'white', label: 'Blanc' },
-      { action: 'transparent', label: 'Transparent' }
+      { action: 'transparent', label: 'Sans fond' }
     ]
   },
   {
@@ -290,6 +290,7 @@ function SettingsPanel({ open, onClose, onSaved }: SettingsPanelProps): JSX.Elem
                   const uiTheme = checked ? 'light' : 'dark'
                   setConfig({ ...config, uiTheme })
                   applyUiTheme(uiTheme)
+                  void window.api.setConfig({ uiTheme })
                 }}
               />
 

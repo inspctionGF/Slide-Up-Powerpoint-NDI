@@ -20,12 +20,11 @@ const ACTIONS: HotkeyAction[] = ['prev', 'next', 'black', 'white', 'transparent'
 /**
  * Touches typiques des pointeurs / télécommandes sans fil
  * (Logitech R400/R800, Kensington, etc.), en plus des raccourcis configurés.
- * Volontairement limitées aux codes HID standards pour éviter les conflits UI
- * (Space / Enter / Backspace restent hors aliases).
+ * Inclut variantes HID clavier + touches média / navigateur.
  */
 export const PRESENTER_KEY_ALIASES: Record<HotkeyAction, string[]> = {
-  prev: ['PageUp'],
-  next: ['PageDown'],
+  prev: ['PageUp', 'MediaPreviousTrack', 'BrowserBack'],
+  next: ['PageDown', 'MediaNextTrack', 'BrowserForward'],
   black: ['Period'],
   white: [],
   transparent: [],
@@ -40,7 +39,7 @@ const attachedWindows = new WeakSet<BrowserWindow>()
 /** Évite le double feu globalShortcut + before-input-event */
 let lastBroadcastAt = 0
 let lastBroadcastAction: HotkeyAction | null = null
-const BROADCAST_DEBOUNCE_MS = 60
+const BROADCAST_DEBOUNCE_MS = 80
 
 function broadcast(action: HotkeyAction): void {
   const now = Date.now()
@@ -67,6 +66,8 @@ function normalizeAccelerator(raw: string): string {
     .replace(/\bArrowDown\b/gi, 'Down')
     .replace(/\bEnter\b/gi, 'Return')
     .replace(/\bEsc\b/gi, 'Escape')
+    .replace(/\bMediaTrackPrevious\b/gi, 'MediaPreviousTrack')
+    .replace(/\bMediaTrackNext\b/gi, 'MediaNextTrack')
 }
 
 /** Parse une valeur config : "PageUp,Left" ou "CommandOrControl+Shift+B" */
@@ -105,6 +106,25 @@ function collectAccelerators(config: HotkeyConfig): Map<string, HotkeyAction> {
   return map
 }
 
+const CODE_TO_ACCEL: Record<string, string> = {
+  PageUp: 'PageUp',
+  PageDown: 'PageDown',
+  ArrowLeft: 'Left',
+  ArrowRight: 'Right',
+  ArrowUp: 'Up',
+  ArrowDown: 'Down',
+  Space: 'Space',
+  Enter: 'Return',
+  Escape: 'Escape',
+  Backspace: 'Backspace',
+  Period: 'Period',
+  Comma: 'Comma',
+  MediaTrackPrevious: 'MediaPreviousTrack',
+  MediaTrackNext: 'MediaNextTrack',
+  BrowserBack: 'BrowserBack',
+  BrowserForward: 'BrowserForward'
+}
+
 function inputToAccelerator(input: Input): string | null {
   if (input.type !== 'keyDown') return null
   if (input.isAutoRepeat) return null
@@ -115,45 +135,88 @@ function inputToAccelerator(input: Input): string | null {
   if (input.shift) parts.push('Shift')
 
   const key = input.key
-  if (!key) return null
+  const code = input.code
 
-  const mapped = ((): string | null => {
+  let mapped: string | null = null
+
+  if (key) {
     switch (key) {
       case 'ArrowLeft':
-        return 'Left'
+        mapped = 'Left'
+        break
       case 'ArrowRight':
-        return 'Right'
+        mapped = 'Right'
+        break
       case 'ArrowUp':
-        return 'Up'
+        mapped = 'Up'
+        break
       case 'ArrowDown':
-        return 'Down'
+        mapped = 'Down'
+        break
       case ' ':
       case 'Spacebar':
-        return 'Space'
+        mapped = 'Space'
+        break
       case 'Enter':
-        return 'Return'
+        mapped = 'Return'
+        break
       case 'Escape':
-        return 'Escape'
+        mapped = 'Escape'
+        break
       case 'Backspace':
-        return 'Backspace'
+        mapped = 'Backspace'
+        break
       case 'PageUp':
-        return 'PageUp'
+        mapped = 'PageUp'
+        break
       case 'PageDown':
-        return 'PageDown'
+        mapped = 'PageDown'
+        break
       case '.':
-        return 'Period'
+        mapped = 'Period'
+        break
       case ',':
-        return 'Comma'
+        mapped = 'Comma'
+        break
       case '+':
-        return 'Plus'
+        mapped = 'Plus'
+        break
       case '-':
-        return 'Minus'
+        mapped = 'Minus'
+        break
+      case 'MediaTrackPrevious':
+      case 'MediaPreviousTrack':
+        mapped = 'MediaPreviousTrack'
+        break
+      case 'MediaTrackNext':
+      case 'MediaNextTrack':
+        mapped = 'MediaNextTrack'
+        break
+      case 'BrowserBack':
+        mapped = 'BrowserBack'
+        break
+      case 'BrowserForward':
+        mapped = 'BrowserForward'
+        break
+      case 'Unidentified':
+      case 'Dead':
+        mapped = null
+        break
       default:
-        if (key.length === 1) return key.toUpperCase()
-        if (/^F\d{1,2}$/i.test(key)) return key.toUpperCase()
-        return key.length <= 16 ? key : null
+        if (key.length === 1) mapped = key.toUpperCase()
+        else if (/^F\d{1,2}$/i.test(key)) mapped = key.toUpperCase()
+        else if (key.length <= 24) mapped = key
+        break
     }
-  })()
+  }
+
+  // Repli : code physique HID (pointeurs qui envoient key=Unidentified)
+  if (!mapped && code) {
+    mapped = CODE_TO_ACCEL[code] ?? null
+    if (!mapped && /^Key[A-Z]$/.test(code)) {
+      mapped = code.slice(3)
+    }
+  }
 
   if (!mapped) return null
   if (['Control', 'Shift', 'Alt', 'Meta', 'Command'].includes(mapped)) return null
@@ -163,7 +226,14 @@ function inputToAccelerator(input: Input): string | null {
 }
 
 /** Touches qui scrollent la page — à absorber quand mappées */
-const PREVENT_DEFAULT_ACCELS = new Set(['PageUp', 'PageDown'])
+const PREVENT_DEFAULT_ACCELS = new Set([
+  'PageUp',
+  'PageDown',
+  'MediaPreviousTrack',
+  'MediaNextTrack',
+  'BrowserBack',
+  'BrowserForward'
+])
 
 function onBeforeInput(event: Event, input: Input): void {
   const accel = inputToAccelerator(input)
@@ -171,8 +241,6 @@ function onBeforeInput(event: Event, input: Input): void {
   const action = acceleratorMap.get(accel)
   if (!action) return
 
-  // Absorber PageUp/Down pour éviter le scroll. Laisser passer les lettres
-  // et flèches afin de ne pas casser la saisie / les listes des réglages.
   if (PREVENT_DEFAULT_ACCELS.has(accel) || accel.includes('+')) {
     event.preventDefault()
   }
@@ -180,8 +248,8 @@ function onBeforeInput(event: Event, input: Input): void {
 }
 
 /**
- * Capture locale (fenêtre au premier plan) — plus fiable pour les HID
- * USB / Bluetooth que globalShortcut seul.
+ * Capture locale (fenêtre au premier plan) — complément à globalShortcut
+ * pour les HID USB / Bluetooth.
  */
 export function attachPresenterInput(win: BrowserWindow): void {
   if (attachedWindows.has(win) || win.isDestroyed()) return
@@ -199,6 +267,14 @@ export function unregisterHotkeys(): void {
   lastStatus = { ok: true, error: null, registered: {} }
 }
 
+function tryRegisterGlobal(accelerator: string, action: HotkeyAction): boolean {
+  try {
+    return globalShortcut.register(accelerator, () => broadcast(action))
+  } catch {
+    return false
+  }
+}
+
 export function registerHotkeys(hotkeys?: HotkeyConfig): HotkeyStatus {
   unregisterHotkeys()
   const config = hotkeys ?? loadConfig().hotkeys ?? DEFAULT_HOTKEYS
@@ -212,25 +288,23 @@ export function registerHotkeys(hotkeys?: HotkeyConfig): HotkeyStatus {
   for (const action of ACTIONS) {
     const configured = parseAccelerators(config[action] || DEFAULT_HOTKEYS[action])
     const aliases = PRESENTER_KEY_ALIASES[action] ?? []
-    const all = [...configured, ...aliases]
+    // Aliases pointeur en premier : PageUp/PageDown doivent être globaux
+    // même si PowerPoint a le focus.
+    const all = [...aliases, ...configured]
     const globalOk: string[] = []
 
     for (const raw of all) {
       const accelerator = normalizeAccelerator(raw)
       if (!accelerator || seenAccel.has(accelerator)) continue
       seenAccel.add(accelerator)
-      try {
-        const ok = globalShortcut.register(accelerator, () => broadcast(action))
-        if (ok) {
-          globalOk.push(accelerator)
-        }
-        // Échec globalShortcut : toléré — before-input-event couvre le 1er plan
-        // (souvent le cas pour Left/Right/B sans modificateur sous Windows).
-      } catch {
-        const isConfigured = configured.some(
-          (c) => normalizeAccelerator(c) === accelerator
-        )
-        if (isConfigured && !map.has(accelerator)) {
+      const ok = tryRegisterGlobal(accelerator, action)
+      if (ok) {
+        globalOk.push(accelerator)
+      } else {
+        const isPresenterAlias = aliases.some((a) => normalizeAccelerator(a) === accelerator)
+        const isConfigured = configured.some((c) => normalizeAccelerator(c) === accelerator)
+        // PageUp/Down critiques pour les pointeurs : signaler l’échec
+        if (isPresenterAlias || (isConfigured && (accelerator === 'PageUp' || accelerator === 'PageDown'))) {
           hardFailures.push(`${action} (${accelerator})`)
         }
       }
@@ -243,7 +317,7 @@ export function registerHotkeys(hotkeys?: HotkeyConfig): HotkeyStatus {
     ok: hardFailures.length === 0,
     error:
       hardFailures.length > 0
-        ? `Impossible d’enregistrer : ${hardFailures.join(', ')}`
+        ? `Impossible d’enregistrer : ${hardFailures.join(', ')} (une autre app détient peut‑être ces touches)`
         : null,
     registered
   }
