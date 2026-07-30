@@ -1,0 +1,23 @@
+appId: com.slideup.app
+productName: Slide-up
+directories:
+  buildResources: build
+  output: release
+files:
+  - out/**/*
+  - package.json
+# Runtime NDI livrée avec l'app (pas besoin d'installer NDI Tools côté émetteur)
+extraResources:
+  - from: resources/ndi/slideup-ndi.exe
+    to: ndi/slideup-ndi.exe
+  - from: resources/ndi/Processing.NDI.Lib.x64.dll
+    to: ndi/Processing.NDI.Lib.x64.dll
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  shortcutName: Slide-up

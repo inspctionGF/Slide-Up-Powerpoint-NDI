@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0b0e12;
+  --surface: #12171d;
+  --surface-raised: #141a21;
+  --surface-sunken: #0b0e12;
+  --surface-input: #0f1318;
+  --ink: #f2f4f6;
+  --text: #c5ccd4;
+  --muted: #8b949e;
+  --faint: #5f6a75;
+  --line: rgba(255, 255, 255, 0.1);
+  --panel-edge: rgba(255, 255, 255, 0.08);
+  --amber: #e8993a;
+  --cyan: #2fc6b8;
+  --live-red: #e23d3d;
+  --next-green: #2fbf6b;
+  --tooltip-bg: #1c2430;
+  --tooltip-ink: #f2f4f6;
+  --tooltip-border: rgba(255, 255, 255, 0.12);
+  --shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.4);
+  --radius-sm: 0.55rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999px;
+  --font-display: 'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+  --app-chrome-height: 3.1rem;
+  --scrollbar-size: 0.55rem;
+  --scrollbar-track: rgba(255, 255, 255, 0.03);
+  --scrollbar-thumb: rgba(232, 153, 58, 0.38);
+  --scrollbar-thumb-hover: rgba(47, 198, 184, 0.55);
+
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-body);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --bg: #e8edf2;
+  --surface: #f4f7fa;
+  --surface-raised: #ffffff;
+  --surface-sunken: #dfe6ee;
+  --surface-input: #ffffff;
+  --ink: #151a21;
+  --text: #3a4552;
+  --muted: #5c6978;
+  --faint: #8491a0;
+  --line: rgba(22, 28, 36, 0.12);
+  --panel-edge: rgba(22, 28, 36, 0.1);
+  --amber: #c97818;
+  --cyan: #178f84;
+  --live-red: #d13232;
+  --next-green: #1f9e55;
+  --tooltip-bg: #1a222c;
+  --tooltip-ink: #f4f7fa;
+  --tooltip-border: rgba(255, 255, 255, 0.1);
+  --shadow-soft: 0 10px 28px rgba(30, 40, 55, 0.14);
+  --scrollbar-track: rgba(22, 28, 36, 0.05);
+  --scrollbar-thumb: rgba(201, 120, 24, 0.42);
+  --scrollbar-thumb-hover: rgba(23, 143, 132, 0.55);
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background:
+    linear-gradient(180deg, rgba(232, 153, 58, 0.55), rgba(47, 198, 184, 0.4));
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='light'] *::-webkit-scrollbar-thumb {
+  background:
+    linear-gradient(180deg, rgba(201, 120, 24, 0.55), rgba(23, 143, 132, 0.4));
+  box-shadow: inset 0 0 0 1px rgba(22, 28, 36, 0.06);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+}
+
+#root {
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.app-shell__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Mode fenêtré : boutons header en icônes seules */
+.app-shell.is-reduced .classic__btn span,
+.app-shell.is-reduced .classic__icon-btn span,
+.app-shell.is-reduced .show__btn span,
+.app-shell.is-reduced .show__back span {
+  display: none;
+}
+
+.app-shell.is-reduced .classic__btn,
+.app-shell.is-reduced .classic__icon-btn,
+.app-shell.is-reduced .show__btn,
+.app-shell.is-reduced .show__back {
+  gap: 0;
+  padding-left: 0.55rem;
+  padding-right: 0.55rem;
+}
+
+.app-shell.is-reduced .classic__gallery-group--nums {
+  display: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(232, 153, 58, 0.7);
+  outline-offset: 2px;
+}
+
+[data-theme='light'] .titlebar__btn:hover {
+  background: rgba(22, 28, 36, 0.06);
+}
+
+[data-theme='light'] .titlebar__btn:active {
+  background: rgba(22, 28, 36, 0.1);
+}
+
+[data-theme='light'] .prod-bar,
+[data-theme='light'] .classic__ndi-bar,
+[data-theme='light'] .classic__transport,
+[data-theme='light'] .show__transport {
+  box-shadow: var(--shadow-soft);
+}

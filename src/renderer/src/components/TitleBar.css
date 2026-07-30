@@ -1,0 +1,116 @@
+.titlebar {
+  --titlebar-height: 2.15rem;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  height: var(--titlebar-height);
+  min-height: var(--titlebar-height);
+  flex-shrink: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 70%),
+    var(--surface);
+  border-bottom: 1px solid var(--panel-edge);
+  user-select: none;
+  z-index: 40;
+}
+
+.titlebar__drag {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0 0.75rem;
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.titlebar__mark {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 0.08rem;
+  background: linear-gradient(135deg, var(--amber), var(--cyan));
+  box-shadow: 0 0 10px rgba(232, 153, 58, 0.35);
+  flex-shrink: 0;
+}
+
+.titlebar__identity {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.titlebar__brand {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.titlebar__sub {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.titlebar__controls {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+.titlebar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.7rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-left: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.titlebar__btn svg {
+  width: 0.72rem;
+  height: 0.72rem;
+}
+
+.titlebar__btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+}
+
+.titlebar__btn:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.titlebar__btn--close:hover {
+  background: #c42b2b;
+  color: #fff;
+}
+
+.titlebar__btn--close:active {
+  background: #a82424;
+}
+
+.titlebar__btn:focus-visible {
+  outline: 2px solid rgba(47, 198, 184, 0.55);
+  outline-offset: -2px;
+}
