@@ -1,8 +1,10 @@
 from pathlib import Path
+from tempfile import gettempdir
 from playwright.sync_api import sync_playwright
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(gettempdir()) / "slide-up-site-tests"
+ROOT.mkdir(parents=True, exist_ok=True)
 
 
 def assert_no_horizontal_overflow(page, label):
@@ -32,6 +34,11 @@ with sync_playwright() as playwright:
     )
     assert desktop.locator(".broadcast-window").is_visible()
     assert desktop.locator("details").count() == 4
+    desktop.screenshot(path=str(ROOT / "site-desktop-hero.png"))
+    for element in desktop.locator("[data-reveal]").all():
+        element.scroll_into_view_if_needed()
+        desktop.wait_for_timeout(80)
+    desktop.locator("#accueil").scroll_into_view_if_needed()
     desktop.locator("details").first.click()
     assert desktop.locator("details").first.get_attribute("open") is not None
     assert_no_horizontal_overflow(desktop, "desktop")
@@ -42,14 +49,19 @@ with sync_playwright() as playwright:
     mobile.on("console", lambda msg: mobile_errors.append(msg.text) if msg.type == "error" else None)
     mobile.goto("http://127.0.0.1:5173", wait_until="networkidle")
 
-    toggle = mobile.get_by_role("button", name="Ouvrir le menu")
+    toggle = mobile.locator("[data-nav-toggle]")
     assert toggle.is_visible()
     toggle.click()
     assert toggle.get_attribute("aria-expanded") == "true"
     assert mobile.locator("[data-nav]").evaluate("el => el.classList.contains('is-open')")
     mobile.get_by_role("link", name="Fonctionnalités").click()
     assert toggle.get_attribute("aria-expanded") == "false"
+    for element in mobile.locator("[data-reveal]").all():
+        element.scroll_into_view_if_needed()
+        mobile.wait_for_timeout(50)
+    mobile.locator("#accueil").scroll_into_view_if_needed()
     assert_no_horizontal_overflow(mobile, "mobile")
+    mobile.screenshot(path=str(ROOT / "site-mobile-hero.png"))
     mobile.screenshot(path=str(ROOT / "site-mobile.png"), full_page=True)
 
     errors = desktop_errors + mobile_errors
