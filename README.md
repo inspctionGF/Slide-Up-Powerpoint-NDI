@@ -1,4 +1,4 @@
-# Slide-up
+# Slide-up Powerpoint NDI
 
 Application desktop Electron pour diffuser des diapositives PowerPoint via NDI.
 
