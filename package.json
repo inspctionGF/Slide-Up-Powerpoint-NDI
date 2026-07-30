@@ -17,6 +17,7 @@
     "prepare:icons": "node scripts/prepare-icons.mjs",
     "ensure:ndi": "node scripts/ensure-ndi-bundle.mjs",
     "preview": "electron-vite preview",
+    "site:dev": "vite site --host 0.0.0.0",
     "dist": "npm run prepare:icons && npm run build:ndi && npm run ensure:ndi && npm run build && electron-builder --win",
     "postinstall": "electron-builder install-app-deps",
     "lint": "eslint ."

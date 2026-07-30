@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0e12" />
+    <meta
+      name="description"
+      content="Slide-up diffuse vos présentations PowerPoint vers OBS, vMix et tout récepteur NDI, avec transparence réelle et sans moniteur dédié."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Slide-up — PowerPoint vers NDI" />
+    <meta
+      property="og:description"
+      content="Diffusez vos diapositives PowerPoint sur le réseau, avec ou sans fond."
+    />
+    <meta
+      property="og:image"
+      content="https://raw.githubusercontent.com/inspctionGF/Slide-Up-Powerpoint-NDI/main/public/Social.png"
+    />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="512" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="./assets/logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+    <title>Slide-up — PowerPoint vers NDI</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="#accueil" aria-label="Slide-up — accueil">
+        <img src="./assets/logo.svg" width="34" height="34" alt="" />
+        <span>Slide-up</span>
+      </a>
+
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="navigation"
+        aria-label="Ouvrir le menu"
+        data-nav-toggle
+      >
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="site-nav" id="navigation" aria-label="Navigation principale" data-nav>
+        <a href="#fonctionnalites">Fonctionnalités</a>
+        <a href="#modes">Modes</a>
+        <a href="#installation">Installation</a>
+        <a href="#faq">FAQ</a>
+        <a
+          class="nav-download"
+          href="https://github.com/inspctionGF/Slide-Up-Powerpoint-NDI/releases/latest/download/Slide-up.Setup.0.0.0.exe"
+        >
+          Télécharger
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" />
+          </svg>
+        </a>
+      </nav>
+    </header>
+
+    <main id="contenu">
+      <section class="hero" id="accueil">
+        <div class="signal-line" aria-hidden="true">
+          <span class="signal-line__pulse"></span>
+        </div>
+
+        <div class="hero__copy">
+          <p class="eyebrow">
+            <span class="status-dot" aria-hidden="true"></span>
+            Diffusion PowerPoint · NDI
+          </p>
+          <h1>Vos slides.<br /><span>Sur le réseau.</span></h1>
+          <p class="hero__lead">
+            Slide-up envoie vos présentations PowerPoint vers OBS, vMix ou tout
+            récepteur NDI — avec fond, sans fond, ou en direct.
+          </p>
+
+          <div class="hero__actions">
+            <a
+              class="button button--primary"
+              href="https://github.com/inspctionGF/Slide-Up-Powerpoint-NDI/releases/latest/download/Slide-up.Setup.0.0.0.exe"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" />
+              </svg>
+              Télécharger pour Windows
+            </a>
+            <a
+              class="button button--ghost"
+              href="https://github.com/inspctionGF/Slide-Up-Powerpoint-NDI"
+            >
+              Voir le code
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </a>
+          </div>
+
+          <ul class="hero__requirements" aria-label="Prérequis">
+            <li>Windows x64</li>
+            <li>PowerPoint requis</li>
+            <li>Licence MIT</li>
+          </ul>
+        </div>
+
+        <div class="hero__visual" aria-label="Aperçu de l’interface Slide-up">
+          <div class="broadcast-window">
+            <div class="window-bar">
+              <div class="window-brand">
+                <img src="./assets/logo.svg" width="20" height="20" alt="" />
+                <span>Slide-up</span>
+              </div>
+              <div class="window-state"><i></i> NDI actif</div>
+              <div class="window-controls" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <div class="window-body">
+              <aside class="slide-rail" aria-hidden="true">
+                <div class="slide-thumb is-active"><span>01</span></div>
+                <div class="slide-thumb"><span>02</span></div>
+                <div class="slide-thumb"><span>03</span></div>
+              </aside>
+
+              <div class="program-area">
+                <div class="program-meta">
+                  <span>PROGRAMME</span>
+                  <span>1920 × 1080</span>
+                </div>
+                <div class="program-frame">
+                  <div class="checker"></div>
+                  <div class="lower-third">
+                    <small>PRÉSENTATION EN DIRECT</small>
+                    <strong>Le fond disparaît.<br />Le message reste.</strong>
+                  </div>
+                  <div class="frame-corner frame-corner--tl"></div>
+                  <div class="frame-corner frame-corner--br"></div>
+                </div>
+                <div class="transport">
+                  <span class="transport__live"><i></i> EN DIRECT</span>
+                  <div class="transport__buttons" aria-hidden="true">
+                    <span>‹</span><span>▶</span><span>›</span>
+                  </div>
+                  <span class="transport__count">01 / 12</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="visual-caption">
+            PNG alpha natif <span></span> Flux NDI sur le réseau local
+          </p>
+        </div>
+      </section>
+
+      <section class="compatibility" aria-label="Compatibilité">
+        <p>Un seul flux. Votre régie habituelle.</p>
+        <div class="compatibility__list">
+          <span>OBS Studio</span>
+          <span>vMix</span>
+          <span>NDI Studio Monitor</span>
+          <span>Réseau local</span>
+        </div>
+      </section>
+
+      <section class="section features" id="fonctionnalites">
+        <div class="section-heading" data-reveal>
+          <p class="eyebrow">Ce que Slide-up simplifie</p>
+          <h2>PowerPoint entre dans la régie, proprement.</h2>
+          <p>
+            Pas de recadrage d’écran, pas de moniteur virtuel, pas de détour par
+            une carte de capture. La présentation devient directement une source
+            réseau exploitable.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature" data-reveal>
+            <span class="feature__index">01</span>
+            <div class="feature__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 7h16M7 4v6m10-6v6M5 12h14v8H5z" />
+              </svg>
+            </div>
+            <h3>Transparence réelle</h3>
+            <p>
+              Exportez les formes et le texte en PNG alpha pour créer des
+              titrages, overlays et lower thirds sans fond PowerPoint.
+            </p>
+          </article>
+
+          <article class="feature" data-reveal>
+            <span class="feature__index">02</span>
+            <div class="feature__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="2" />
+                <path d="M8.5 8.5a5 5 0 0 0 0 7m7-7a5 5 0 0 1 0 7M5 5a10 10 0 0 0 0 14m14-14a10 10 0 0 1 0 14" />
+              </svg>
+            </div>
+            <h3>NDI intégré</h3>
+            <p>
+              La runtime d’envoi est incluse. Aucun NDI Tools n’est nécessaire
+              sur l’ordinateur qui diffuse la présentation.
+            </p>
+          </article>
+
+          <article class="feature" data-reveal>
+            <span class="feature__index">03</span>
+            <div class="feature__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h3" />
+              </svg>
+            </div>
+            <h3>Contrôle de présentation</h3>
+            <p>
+              Naviguez avec les raccourcis clavier ou votre pointeur sans fil,
+              tout en gardant les commandes noir, blanc et transparent.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section modes" id="modes">
+        <div class="section-heading section-heading--compact" data-reveal>
+          <p class="eyebrow">Deux façons de travailler</p>
+          <h2>Préparez. Ou suivez le direct.</h2>
+        </div>
+
+        <div class="mode-grid">
+          <article class="mode-card mode-card--classic" data-reveal>
+            <div class="mode-card__top">
+              <span class="mode-card__tag">Mode 01</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m12 3 9 5-9 5-9-5 9-5Z" />
+                <path d="m3 12 9 5 9-5M3 16l9 5 9-5" />
+              </svg>
+            </div>
+            <h3>Classic</h3>
+            <p>
+              Ouvrez un fichier PPTX, parcourez toutes les diapositives et
+              choisissez précisément ce qui part à l’antenne.
+            </p>
+            <ul>
+              <li>Galerie complète des slides</li>
+              <li>Prévisualisation avant envoi</li>
+              <li>Fond, transparence et écrans de secours</li>
+            </ul>
+          </article>
+
+          <article class="mode-card mode-card--live" data-reveal>
+            <div class="mode-card__top">
+              <span class="mode-card__tag">Mode 02</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m8 5 11 7-11 7V5Z" />
+              </svg>
+            </div>
+            <h3>SlideShow</h3>
+            <p>
+              Suivez automatiquement la présentation PowerPoint en cours et
+              reflétez la diapositive active sur le flux NDI.
+            </p>
+            <ul>
+              <li>Synchronisation avec le diaporama</li>
+              <li>Changements de slide automatiques</li>
+              <li>Contrôle noir, blanc et pause</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section workflow" id="installation">
+        <div class="workflow__intro" data-reveal>
+          <p class="eyebrow">Mise en route</p>
+          <h2>De PowerPoint à l’antenne en trois gestes.</h2>
+          <p>
+            Slide-up reste sur le poste de présentation et publie un flux que
+            votre régie retrouve sur le réseau local.
+          </p>
+          <a
+            class="text-link"
+            href="https://github.com/inspctionGF/Slide-Up-Powerpoint-NDI/releases"
+          >
+            Consulter toutes les versions
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </a>
+        </div>
+
+        <ol class="workflow__steps">
+          <li data-reveal>
+            <span>01</span>
+            <div>
+              <h3>Installez</h3>
+              <p>Téléchargez l’installateur Windows x64 et lancez Slide-up.</p>
+            </div>
+          </li>
+          <li data-reveal>
+            <span>02</span>
+            <div>
+              <h3>Choisissez</h3>
+              <p>Ouvrez un fichier en Classic ou démarrez un diaporama en direct.</p>
+            </div>
+          </li>
+          <li data-reveal>
+            <span>03</span>
+            <div>
+              <h3>Recevez</h3>
+              <p>Ajoutez la source NDI dans OBS, vMix ou votre outil de régie.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section faq" id="faq">
+        <div class="section-heading section-heading--compact" data-reveal>
+          <p class="eyebrow">Questions fréquentes</p>
+          <h2>Avant de passer à l’antenne.</h2>
+        </div>
+
+        <div class="faq__list">
+          <details data-reveal>
+            <summary>Faut-il installer NDI Tools ?</summary>
+            <p>
+              Non sur le poste qui envoie les slides : la runtime NDI est incluse
+              dans Slide-up. Le poste de réception doit disposer d’un logiciel
+              compatible NDI, comme OBS avec le plugin adapté, vMix ou NDI Studio
+              Monitor.
+            </p>
+          </details>
+          <details data-reveal>
+            <summary>Microsoft PowerPoint est-il obligatoire ?</summary>
+            <p>
+              Oui. Slide-up utilise l’automatisation PowerPoint sous Windows pour
+              conserver la meilleure fidélité possible lors de l’export.
+            </p>
+          </details>
+          <details data-reveal>
+            <summary>Peut-on diffuser une diapositive sans fond ?</summary>
+            <p>
+              Oui. Le mode sans fond exporte les formes et le texte en PNG avec
+              transparence, pratique pour les titres et habillages vidéo.
+            </p>
+          </details>
+          <details data-reveal>
+            <summary>Le projet est-il open source ?</summary>
+            <p>
+              Le code source de Slide-up est publié sous licence MIT. Les
+              composants tiers, dont la runtime NDI, conservent leurs licences
+              respectives.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <section class="closing-cta">
+        <div class="closing-cta__mark" aria-hidden="true">
+          <img src="./assets/logo.svg" width="170" height="170" alt="" />
+        </div>
+        <div class="closing-cta__copy" data-reveal>
+          <p class="eyebrow">Prêt pour le réseau</p>
+          <h2>Votre prochaine slide est déjà une source.</h2>
+          <p>
+            Installez Slide-up sur le poste PowerPoint et récupérez le flux dans
+            votre régie.
+          </p>
+          <a
+            class="button button--light"
+            href="https://github.com/inspctionGF/Slide-Up-Powerpoint-NDI/releases/latest/download/Slide-up.Setup.0.0.0.exe"
+          >
+            Télécharger Slide-up
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" />
+            </svg>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__brand">
+        <a class="brand brand--footer" href="#accueil">
+          <img src="./assets/logo.svg" width="30" height="30" alt="" />
+          <span>Slide-up</span>
+        </a>
+        <p>PowerPoint vers NDI, sans écran de capture.</p>
+      </div>
+
+      <div class="site-footer__links">
+        <a href="https://github.com/inspctionGF/Slide-Up-Powerpoint-NDI">GitHub</a>
+        <a href="https://github.com/inspctionGF/Slide-Up-Powerpoint-NDI/releases">Versions</a>
+        <a href="https://github.com/inspctionGF/Slide-Up-Powerpoint-NDI/blob/main/LICENSE">Licence MIT</a>
+        <a href="https://github.com/inspctionGF/Slide-Up-Powerpoint-NDI/issues">Signaler un problème</a>
+      </div>
+
+      <div class="site-footer__legal">
+        <span>© <span data-year></span> Slide-up</span>
+        <span>Windows x64</span>
+        <span>NDI® est une marque déposée de Vizrt NDI AB.</span>
+      </div>
+    </footer>
+  </body>
+</html>

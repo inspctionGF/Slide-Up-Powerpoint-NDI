@@ -2,6 +2,19 @@
 
 Application desktop Electron pour diffuser des diapositives PowerPoint via NDI.
 
+## Site
+
+La landing page se trouve dans [`site/`](site/) et est publiée automatiquement
+avec GitHub Pages :
+
+**https://inspctiongf.github.io/Slide-Up-Powerpoint-NDI/**
+
+Pour la prévisualiser localement :
+
+```bash
+npm run site:dev
+```
+
 ## Prérequis utilisateur (émetteur)
 
 - Windows x64
